@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private int id = 1;
+    private final int id = 1;
     private Map<Integer, User> users = new HashMap<>();
 
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
@@ -32,66 +33,68 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User addUser(@RequestBody @NonNull User user) {
+    public User addUser(@RequestBody @NotNull User user) throws ValidationException {
         user.setId(id);
-        id++;
         log.error("Ошибка при добовление пользователя");
-            try {
+
                 if (users.containsKey(user.getId())) {
                     throw new ValidationException("Пользователь уже существует");
-                }else if(user.getEmail().isEmpty()){
-                    throw new ValidationException("E-mail не введен");
-                }else if(user.getEmail().contains("'@'")){
-                    throw new ValidationException("E-mail должен содержать символ @");
-                }else if(user.getLogin().isEmpty()){
-                    throw new ValidationException("Логин не введен");
-                }else if(user.getLogin().contains(" ")){
-                    throw new ValidationException("Логин не должен содержать пробелы");
-                }else if(user.getBirthday().isAfter(LocalDate.now())){
-                    throw new ValidationException("Дата рождение не может быть в будущем");
-                } else {
-                    if(user.getName().isEmpty()){
-                        user.setName(user.getLogin());
-                        users.put(user.getId(),user);
-                    }else {
-                        users.put(user.getId(),user);
-                    }
                 }
-            }catch (ValidationException e){
-                e.getMessage();
-            }
+                if(user.getEmail().isEmpty()){
+                    throw new ValidationException("E-mail не введен");
+                }
+                if(user.getEmail().contains("'@'")){
+                    throw new ValidationException("E-mail должен содержать символ @");
+                }
+                if(user.getLogin().isEmpty()){
+                    throw new ValidationException("Логин не введен");
+                }
+                if(user.getLogin().contains(" ")){
+                    throw new ValidationException("Логин не должен содержать пробелы");
+                }
+                if(user.getBirthday().isAfter(LocalDate.now())){
+                    throw new ValidationException("Дата рождение не может быть в будущем");
+                }
+
+                if(user.getName()==null) {
+                    user.setName(user.getLogin());
+                }
+
+           users.put(user.getId(),user);
         return user;
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public User updateUsers(@RequestBody @NonNull User user) {
+    public User updateUsers(@RequestBody @NotNull User user) throws ValidationException {
         log.error("Ошибка при обновление пользователя");
-            try {
+
                 if (!users.containsKey(user.getId())) {
                 throw new ValidationException("Нет такого пользователя");
-                }else if (user.getEmail().isEmpty()) {
-                    throw new ValidationException("E-mail не введен");
-                } else if (user.getEmail().contains("'@'")) {
-                    throw new ValidationException("E-mail должен содержать символ @");
-                } else if (user.getLogin().isEmpty()) {
-                    throw new ValidationException("Логин не введен");
-                } else if (user.getLogin().contains(" ")) {
-                    throw new ValidationException("Логин не должен содержать пробелы");
-                } else if (user.getBirthday().isAfter(LocalDate.now())) {
-                    throw new ValidationException("Дата рождение не может быть в будущем");
-                } else {
-                    if(user.getName().isEmpty()){
-                        user.setName(user.getLogin());
-                        users.put(user.getId(),user);
-                    }else {
-                        users.put(user.getId(),user);
-                    }
                 }
-            } catch (ValidationException e) {
-                e.getMessage();
-
-        }
+                if (user.getEmail().isEmpty()) {
+                    throw new ValidationException("E-mail не введен");
+                }
+                if (user.getEmail().contains("'@'")) {
+                    throw new ValidationException("E-mail должен содержать символ @");
+                }
+                if (user.getLogin().isEmpty()) {
+                    throw new ValidationException("Логин не введен");
+                }
+                if (user.getLogin().contains(" ")) {
+                    throw new ValidationException("Логин не должен содержать пробелы");
+                }
+                if (user.getBirthday().isAfter(LocalDate.now())) {
+                    throw new ValidationException("Дата рождение не может быть в будущем");
+                }
+                try {
+                    if (user.getName() == null) {
+                        user.setName(user.getLogin());
+                    }
+                }catch(NullPointerException e){
+                    throw new ValidationException("Дата рождение не может быть в будущем");
+                }
+            users.put(user.getId(),user);
             return user;
     }
 }
