@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exseptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/films")
 public class FilmController{
-    private final int id = 1;
+    private int id = 1;
     private Map<Integer, Film> films = new HashMap<>();
 
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
@@ -37,6 +37,7 @@ public class FilmController{
     public Film addFilm(@RequestBody @NotNull Film film) throws ValidationException {
         LocalDate date = LocalDate.of(1895,12,28);
         film.setId(id);
+        id++;
         log.error("Ошибки валидации при добавление фильма");
                 if (films.containsKey(film.getId())) {
                     throw new ValidationException("Tакого фильм уже существует");

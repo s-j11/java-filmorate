@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controllers;
 
-import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final int id = 1;
+    private int id = 1;
     private Map<Integer, User> users = new HashMap<>();
 
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
@@ -35,6 +34,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User addUser(@RequestBody @NotNull User user) throws ValidationException {
         user.setId(id);
+        id++;
         log.error("Ошибка при добовление пользователя");
 
                 if (users.containsKey(user.getId())) {
@@ -56,12 +56,11 @@ public class UserController {
                     throw new ValidationException("Дата рождение не может быть в будущем");
                 }
 
-                if(user.getName()==null) {
-                    user.setName(user.getLogin());
+                if (user.getName() == null) {
+                user.setName(user.getLogin());
                 }
-
-           users.put(user.getId(),user);
-        return user;
+                users.put(user.getId(),user);
+                return user;
     }
 
     @PutMapping
@@ -87,12 +86,8 @@ public class UserController {
                 if (user.getBirthday().isAfter(LocalDate.now())) {
                     throw new ValidationException("Дата рождение не может быть в будущем");
                 }
-                try {
-                    if (user.getName() == null) {
+                if (user.getName() == null) {
                         user.setName(user.getLogin());
-                    }
-                }catch(NullPointerException e){
-                    throw new ValidationException("Дата рождение не может быть в будущем");
                 }
             users.put(user.getId(),user);
             return user;

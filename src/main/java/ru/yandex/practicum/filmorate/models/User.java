@@ -24,8 +24,8 @@ public class User {
     @NotBlank(message = "Логин не введен")
     private String login;
 
-
-    private String name;
+    @Null
+    private String name = null;
 
     @Future
     private LocalDate birthday;
