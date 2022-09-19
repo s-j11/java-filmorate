@@ -9,13 +9,15 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Null;
 import java.time.LocalDate;
+import java.util.Set;
+
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
-    private int id;
+    private long id;
 
     @NotBlank(message = "E-mail не введен")
     @Email(message = "E-mail должен содержать символ @")
@@ -29,5 +31,8 @@ public class User {
 
     @Future
     private LocalDate birthday;
+
+    @Null
+    private Set<Long> friends;
 
 }
