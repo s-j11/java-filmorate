@@ -7,68 +7,107 @@ import ru.yandex.practicum.filmorate.exseptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
 @Service
 public class UserService {
     private InMemoryUserStorage inMemoryUserStorage;
-
     @Autowired
     public UserService(InMemoryUserStorage inMemoryUserStorage) {
         this.inMemoryUserStorage = inMemoryUserStorage;
     }
+    public InMemoryUserStorage getInMemoryUserStorage() {
+        return inMemoryUserStorage;
+    }
 
-    public Collection<Long> getFriends(Long id){
-//        Collection<Long> friends;
+    public Collection<User> getFriends(Long id){
+      Collection<Long> friendsID;
+      Collection<User> friends = new ArrayList<>();
         if(!inMemoryUserStorage.getUsers().containsKey(id)){
             throw new NotFoundException("Данного пользователя нет");
+        } else {
+            friendsID = inMemoryUserStorage.getUsers().get(id).getFriends();
+            for (Long number : friendsID){
+                User user = inMemoryUserStorage.getUsers().get(number);
+                friends.add(user);
+            }
+            return friends;
         }
-//        else {
-//            friends = inMemoryUserStorage.getUsers().get(id).getFriends();
-
-        return inMemoryUserStorage.getUsers().get(id).getFriends();
     }
 
     public void addFriend(Long userID, Long friendID) throws ValidationException,NotFoundException {
-        if (!inMemoryUserStorage.getUsers().containsKey(userID) || !inMemoryUserStorage.getUsers().containsKey(friendID)) {
+        if (!inMemoryUserStorage.getUsers().containsKey(userID) || !inMemoryUserStorage.getUsers()
+                .containsKey(friendID)) {
             throw new NotFoundException("Нет такого пользователя");
-        }else {
+        } else {
             Set<Long> friedns = new HashSet<>();
-            friedns.add(friendID);
+            Set<Long> friends2 = new HashSet<>();
             User user = inMemoryUserStorage.getUsers().get(userID);
-            user.setFriends(friedns);
-            inMemoryUserStorage.updateUser(user);
+            User otherUser = inMemoryUserStorage.getUsers().get(friendID);
+            if (inMemoryUserStorage.getUsers().get(userID).getFriends() == null) {
+                friedns.add(friendID);
+                user.setFriends(friedns);
+                inMemoryUserStorage.updateUser(user);
+                friends2.add(userID);
+                otherUser.setFriends(friends2);
+                inMemoryUserStorage.updateUser(otherUser);
+            }else if (inMemoryUserStorage.getUsers().get(userID).getFriends() != null) {
+                friedns = user.getFriends();
+                friedns.add(friendID);
+                user.setFriends(friedns);
+                inMemoryUserStorage.updateUser(user);
+                friends2.add(userID);
+                otherUser.setFriends(friends2);
+                inMemoryUserStorage.updateUser(otherUser);
+            }else if (inMemoryUserStorage.getUsers().get(userID).getFriends() != null || inMemoryUserStorage.getUsers()
+                    .get(friendID).getFriends() != null) {
+                    friedns = user.getFriends();
+                    friedns.add(friendID);
+                    user.setFriends(friedns);
+                    inMemoryUserStorage.updateUser(user);
+                    friends2 = otherUser.getFriends();
+                    friends2.add(userID);
+                    otherUser.setFriends(friends2);
+                    inMemoryUserStorage.updateUser(otherUser);
+                }
+            }
         }
-    }
 
     public void deleteFriend(Long userID, Long friendID)throws ValidationException,NotFoundException{
 
-        if (!inMemoryUserStorage.getUsers().containsKey(userID) && !inMemoryUserStorage.getUsers().containsKey(friendID)) {
+        if (!inMemoryUserStorage.getUsers().containsKey(userID) || !inMemoryUserStorage.getUsers()
+                .containsKey(friendID)) {
             throw new NotFoundException("Нет такого пользователя");
         }else{
             User user = inMemoryUserStorage.getUsers().get(userID);
+            User friend = inMemoryUserStorage.getUsers().get(friendID);
             Set<Long> friends = user.getFriends();
+            Set<Long> friends2 = friend.getFriends();
             friends.remove(friendID);
             user.setFriends(friends);
+            friends2.remove(userID);
+            friend.setFriends(friends2);
             inMemoryUserStorage.updateUser(user);
+            inMemoryUserStorage.updateUser(friend);
         }
     }
 
-    public Collection<Long> getCommonFriends(Long id, Long otherID) throws NotFoundException{
-        Collection<Long> commondFriend = null;
-        if (!inMemoryUserStorage.getUsers().containsKey(id) && (!inMemoryUserStorage.getUsers().containsKey(otherID))){
-            throw new NotFoundException("Нет такого пользователя");
-        }else {
+    public Collection<User> getCommonFriends(Long id, Long otherID) throws NotFoundException {
+        Collection<User> commondFriend = new ArrayList<>();
+        if (inMemoryUserStorage.getUsers().containsKey(id) || (inMemoryUserStorage.getUsers().containsKey(otherID))) {
             User user = inMemoryUserStorage.getUsers().get(id);
-                User otherUser = inMemoryUserStorage.getUsers().get(otherID);
-                for (Long friend : user.getFriends()) {
-                    if (otherUser.getFriends().contains(friend))
-                        commondFriend.add(friend);
-                }
+            User otherUser = inMemoryUserStorage.getUsers().get(otherID);
+            if(user.getFriends()== null || otherUser.getFriends()==null) {
+            return commondFriend;
+                //if (!user.getFriends().isEmpty() || !otherUser.getFriends().isEmpty())
+            } else  {
+                    for (Long friend : user.getFriends()) {
+                        if (otherUser.getFriends().contains(friend)) {
+                            commondFriend.add(inMemoryUserStorage.getUsers().get(friend));
+                        }
+                    }
+                    return commondFriend;
             }
-
+        }
         return commondFriend;
     }
 

@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface UserStorage {
 
-
     public List<User> findAll()throws ValidationException, NotFoundException;
     public User addUser(User user)throws ValidationException;
 

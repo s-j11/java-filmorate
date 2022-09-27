@@ -47,11 +47,9 @@ public class InMemoryFilmStorage implements FilmStorage {
                 throw new ValidationException("Продолжительность фильма в минутах должна быль " +
                         "неотрицательной и больше 0");
             }
-
             films.put(film.getId(), film);
             id++;
         }
-
         return film;
     }
 
@@ -83,8 +81,7 @@ public class InMemoryFilmStorage implements FilmStorage {
                         "неотрицательной и больше 0");
             }
             films.put(film.getId(), film);
+            return film;
         }
-        return film;
-
     }
 }

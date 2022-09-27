@@ -11,10 +11,6 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
-//@RestControllerAdvice(basePackages = "ru.yandex.practicum.controllers")
 @RestControllerAdvice(assignableTypes = {UserController.class, FilmController.class, InMemoryUserStorage.class,
         InMemoryFilmStorage.class, UserService.class,FilmController.class})
 public class ErrorHander {
@@ -30,11 +26,5 @@ public class ErrorHander {
     public ErrorResponse handlerUserNotFound(final NotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
-
-//    @ExceptionHandler(NotFoundException.class)
-//    public void handleNotFound(HttpServletResponse response) throws IOException {
-//        response.sendError(HttpStatus.NOT_FOUND.value());
-//    }
-
 
 }

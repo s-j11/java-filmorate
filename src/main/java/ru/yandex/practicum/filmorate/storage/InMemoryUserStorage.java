@@ -13,13 +13,12 @@ import java.util.Map;
 
 @Component
 public class InMemoryUserStorage implements UserStorage {
-    private static long id = 1;
-    private Map<Long, User> users = new HashMap<Long, User>();
+    private  long id = 1;
+    private Map<Long, User> users = new HashMap<>();
 
     public Map<Long, User> getUsers() {
         return users;
     }
-
 
     @Override
     public List<User> findAll() {
@@ -29,11 +28,6 @@ public class InMemoryUserStorage implements UserStorage {
             }
             return inventoryUsers;
     }
-
-    private static long getNextId(){
-        return id++;
-    }
-
 
     @Override
     public User addUser(User user) throws ValidationException, NotFoundException {
@@ -59,12 +53,11 @@ public class InMemoryUserStorage implements UserStorage {
             if (user.getName().isEmpty()) {
                 user.setName(user.getLogin());
             }
-            user.setId(getNextId());
+            user.setId(id);
             users.put(user.getId(), user);
-//            id++;
+            id++;
         }
         return user;
-
     }
 
     @Override
@@ -73,7 +66,6 @@ public class InMemoryUserStorage implements UserStorage {
             throw new NotFoundException("Таково пользователя нет");
         }else {
             users.remove(userID);
-//            id--;
         }
     }
 
@@ -102,8 +94,6 @@ public class InMemoryUserStorage implements UserStorage {
             }
             users.put(user.getId(), user);
             return user;
-
         }
-
     }
 }

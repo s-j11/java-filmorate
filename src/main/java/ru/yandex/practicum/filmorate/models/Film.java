@@ -3,11 +3,9 @@ package ru.yandex.practicum.filmorate.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.Set;
-
 
 @Data
 @NoArgsConstructor
