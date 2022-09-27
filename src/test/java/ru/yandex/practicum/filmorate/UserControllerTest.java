@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserControllerTest {
-    Map<Integer, User> users = new HashMap<Integer, User>();
+    Map<Long, User> users = new HashMap<Long, User>();
     User user = new User();
 
     @BeforeEach
@@ -28,7 +28,7 @@ public class UserControllerTest {
 
     @Test
     public void shouldReturnAllFilms() throws Exception {
-        Map<Integer, User> usersTest = new HashMap<>();
+        Map<Long, User> usersTest = new HashMap<>();
         User userTest = new User();
         userTest.setId(1);
         userTest.setEmail("maximpetorv@yandex.ru");
@@ -45,7 +45,7 @@ public class UserControllerTest {
 
     @Test
     public void  shouldAddFilms(){
-        Map<Integer, User> usersTest = new HashMap<>();
+        Map<Long, User> usersTest = new HashMap<>();
         User userTest = new User();
         userTest.setId(1);
         userTest.setId(1);
@@ -67,7 +67,7 @@ public class UserControllerTest {
 
     @Test
     public void  shouldUpdateFilms() {
-        Map<Integer, User> usersTest = new HashMap<>();
+        Map<Long, User> usersTest = new HashMap<>();
         User userTest = new User();
         userTest.setId(1);
         userTest.setId(1);

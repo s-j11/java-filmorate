@@ -12,7 +12,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FilmControllerTest {
-    Map<Integer, Film> films = new HashMap<>();
+    Map<Long, Film> films = new HashMap<Long, Film>();
     Film film = new Film();
 
     @BeforeEach
@@ -27,7 +27,7 @@ public class FilmControllerTest {
 
     @Test
     public void shouldReturnAllFilms() throws Exception {
-        Map<Integer,Film> filmsTest = new HashMap<>();
+        Map<Long, Film> filmsTest = new HashMap<>();
         Film filmTest = new Film();
         filmTest.setId(1);
         filmTest.setName("Титаник");
@@ -45,7 +45,7 @@ public class FilmControllerTest {
     @Test
     public void  shouldAddFilms(){
         LocalDate dateTest = LocalDate.of(1895,12,28);
-        Map<Integer,Film> filmsTest = new HashMap<>();
+        Map<Long, Film> filmsTest = new HashMap<>();
         Film filmTest = new Film();
         filmTest.setId(1);
         filmTest.setName("Титаник");
@@ -65,7 +65,7 @@ public class FilmControllerTest {
     @Test
     public void  shouldUpdateFilms() {
         LocalDate dateTest = LocalDate.of(1895, 12, 28);
-        Map<Integer, Film> filmsTest = new HashMap<>();
+        Map<Long, Film> filmsTest = new HashMap<>();
         Film filmTest = new Film();
         filmTest.setId(1);
         filmTest.setName("Титаник");
