@@ -54,15 +54,14 @@ public class UserControllerTest {
         userTest.setName("Maxim");
         userTest.setBirthday(LocalDate.of(1999,11,10));
         usersTest.put(userTest.getId(),userTest);
-        User user1 = users.get(1);
         assertAll(
                 ()->assertEquals(usersTest, users),
-                ()->assertNotEquals(null, user1.getEmail()),
-                ()->assertTrue(user1.getEmail().contains("@")),
-                ()->assertNotEquals(null,user1.getLogin()),
-                ()->assertFalse(user1.getLogin().contains(" ")),
-                ()->assertEquals(userTest.getLogin(),user1.getName()),
-                ()->assertTrue(user1.getBirthday().isBefore(LocalDate.now())));
+                ()->assertNotEquals(null, user.getEmail()),
+                ()->assertTrue(user.getEmail().contains("@")),
+                ()->assertNotEquals(null,user.getLogin()),
+                ()->assertFalse(user.getLogin().contains(" ")),
+                ()->assertEquals(userTest.getLogin(),user.getName()),
+                ()->assertTrue(user.getBirthday().isBefore(LocalDate.now())));
     }
 
     @Test
@@ -76,14 +75,13 @@ public class UserControllerTest {
         userTest.setName("Maxim");
         userTest.setBirthday(LocalDate.of(1999,11,10));
         usersTest.put(userTest.getId(),userTest);
-        User user1 = users.get(1);
         assertAll(
                 ()->assertEquals(usersTest, users),
-                ()->assertNotEquals(null, user1.getEmail()),
-                ()->assertTrue(user1.getEmail().contains("@")),
-                ()->assertNotEquals(null,user1.getLogin()),
-                ()->assertFalse(user1.getLogin().contains(" ")),
-                ()->assertEquals(userTest.getLogin(),user1.getName()),
-                ()->assertTrue(user1.getBirthday().isBefore(LocalDate.now())));
+                ()->assertNotEquals(null, user.getEmail()),
+                ()->assertTrue(user.getEmail().contains("@")),
+                ()->assertNotEquals(null,user.getLogin()),
+                ()->assertFalse(user.getLogin().contains(" ")),
+                ()->assertEquals(userTest.getLogin(),user.getName()),
+                ()->assertTrue(user.getBirthday().isBefore(LocalDate.now())));
     }
 }

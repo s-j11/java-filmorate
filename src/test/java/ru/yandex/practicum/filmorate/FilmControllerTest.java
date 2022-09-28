@@ -53,13 +53,12 @@ public class FilmControllerTest {
         filmTest.setReleaseDate(LocalDate.of(1997,1,1));
         filmTest.setDuration(195);
         filmsTest.put(filmTest.getId(),filmTest);
-        Film film1 =films.get(1);
         assertAll(
                 ()->assertEquals(filmsTest, films),
-                ()->assertNotEquals(null, film1.getName()),
-                ()->assertTrue(film1.getDescription().length() <= 200),
-                ()->assertTrue(film1.getReleaseDate().isAfter(dateTest)),
-                ()->assertTrue(film1.getDuration()>0));
+                ()->assertNotEquals(null, film.getName()),
+                ()->assertTrue(film.getDescription().length() <= 200),
+                ()->assertTrue(film.getReleaseDate().isAfter(dateTest)),
+                ()->assertTrue(film.getDuration()>0));
     }
 
     @Test
@@ -73,13 +72,12 @@ public class FilmControllerTest {
         filmTest.setReleaseDate(LocalDate.of(1997, 1, 1));
         filmTest.setDuration(195);
         filmsTest.put(filmTest.getId(), filmTest);
-        Film film1 = films.get(1);
         assertAll(
                 () -> assertEquals(filmsTest, films),
-                () -> assertNotEquals(null, film1.getName()),
-                () -> assertTrue(film1.getDescription().length() <= 200),
-                () -> assertTrue(film1.getReleaseDate().isAfter(dateTest)),
-                () -> assertTrue(film1.getDuration() > 0));
+                ()->assertNotEquals(null, film.getName()),
+                () -> assertTrue(film.getDescription().length() <= 200),
+                () -> assertTrue(film.getReleaseDate().isAfter(dateTest)),
+                () -> assertTrue(film.getDuration() > 0));
     }
 }
 
