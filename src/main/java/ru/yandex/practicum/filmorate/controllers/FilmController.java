@@ -25,19 +25,19 @@ public class FilmController{
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Film> findAll() {
-        return filmService.getInMemoryFilmStorage().findAll();
+        return filmService.findAllFilms();
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Film addFilm(@RequestBody @NotNull Film film) throws ValidationException {
         log.error("Ошибки валидации при добавление фильма");
-        return filmService.getInMemoryFilmStorage().addFilm(film);
+        return filmService.addFilm(film);
     }
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public Film updateFilm(@RequestBody @NotNull Film film) throws ValidationException {
         log.error("Ошибки валидации при обновление фильма");
-        return filmService.getInMemoryFilmStorage().updateFilm(film);
+        return filmService.updateFilm(film);
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

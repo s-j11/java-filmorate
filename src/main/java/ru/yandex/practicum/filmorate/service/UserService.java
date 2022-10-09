@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.exseptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
+import java.time.LocalDate;
 import java.util.*;
 @Service
 public class UserService {
@@ -19,18 +20,77 @@ public class UserService {
         return inMemoryUserStorage;
     }
 
+    private Map<Long, User> users = new HashMap<>();
+    public List<User> findAllUsers(){
+        return inMemoryUserStorage.findAllUsers();
+    }
+
+    public User addUser(User user) throws ValidationException, NotFoundException {
+        users = inMemoryUserStorage.getUsers();
+        if (users.containsKey(user.getId())) {
+            throw new NotFoundException("Пользователь уже существует");
+        } else {
+            if (user.getEmail().isEmpty()) {
+                throw new ValidationException("E-mail не введен");
+            }
+            if (user.getEmail().contains("'@'")) {
+                throw new ValidationException("E-mail должен содержать символ @");
+            }
+            if (user.getLogin().isEmpty()) {
+                throw new ValidationException("Логин не введен");
+            }
+            if (user.getLogin().contains(" ")) {
+                throw new ValidationException("Логин не должен содержать пробелы");
+            }
+            if (user.getBirthday().isAfter(LocalDate.now())) {
+                throw new ValidationException("Дата рождение не может быть в будущем");
+            }
+            if (user.getName().isEmpty()) {
+                user.setName(user.getLogin());
+            }
+            return inMemoryUserStorage.addUser(user);
+        }
+    }
+    public User updateUser(User user)throws NotFoundException, ValidationException {
+        users = inMemoryUserStorage.getUsers();
+        if (!users.containsKey(user.getId())) {
+            throw new NotFoundException("Нет такого пользователя");
+        } else {
+            if (user.getEmail().isEmpty()) {
+                throw new ValidationException("E-mail не введен");
+            }
+            if (user.getEmail().contains("'@'")) {
+                throw new ValidationException("E-mail должен содержать символ @");
+            }
+            if (user.getLogin().isEmpty()) {
+                throw new ValidationException("Логин не введен");
+            }
+            if (user.getLogin().contains(" ")) {
+                throw new ValidationException("Логин не должен содержать пробелы");
+            }
+            if (user.getBirthday().isAfter(LocalDate.now())) {
+                throw new ValidationException("Дата рождение не может быть в будущем");
+            }
+            if (user.getName() == null) {
+                user.setName(user.getLogin());
+            }
+        }
+        return inMemoryUserStorage.updateUser(user);
+    }
+
+    public void deleteUser(long userID)throws NotFoundException{
+        if (users.containsKey(userID)){
+            throw new NotFoundException("Таково пользователя нет");
+        }else {
+            inMemoryUserStorage.deleteUser(userID);
+        }
+    }
+
     public Collection<User> getFriends(Long id){
-      Collection<Long> friendsID;
-      Collection<User> friends = new ArrayList<>();
         if(!inMemoryUserStorage.getUsers().containsKey(id)){
             throw new NotFoundException("Данного пользователя нет");
         } else {
-            friendsID = inMemoryUserStorage.getUsers().get(id).getFriends();
-            for (Long number : friendsID){
-                User user = inMemoryUserStorage.getUsers().get(number);
-                friends.add(user);
-            }
-            return friends;
+            return inMemoryUserStorage.getFriends(id);
         }
     }
 
@@ -39,38 +99,9 @@ public class UserService {
                 .containsKey(friendID)) {
             throw new NotFoundException("Нет такого пользователя");
         } else {
-            Set<Long> friedns = new HashSet<>();
-            Set<Long> friends2 = new HashSet<>();
-            User user = inMemoryUserStorage.getUsers().get(userID);
-            User otherUser = inMemoryUserStorage.getUsers().get(friendID);
-            if (inMemoryUserStorage.getUsers().get(userID).getFriends() == null) {
-                friedns.add(friendID);
-                user.setFriends(friedns);
-                inMemoryUserStorage.updateUser(user);
-                friends2.add(userID);
-                otherUser.setFriends(friends2);
-                inMemoryUserStorage.updateUser(otherUser);
-            }else if (inMemoryUserStorage.getUsers().get(userID).getFriends() != null) {
-                friedns = user.getFriends();
-                friedns.add(friendID);
-                user.setFriends(friedns);
-                inMemoryUserStorage.updateUser(user);
-                friends2.add(userID);
-                otherUser.setFriends(friends2);
-                inMemoryUserStorage.updateUser(otherUser);
-            }else if (inMemoryUserStorage.getUsers().get(userID).getFriends() != null || inMemoryUserStorage.getUsers()
-                    .get(friendID).getFriends() != null) {
-                    friedns = user.getFriends();
-                    friedns.add(friendID);
-                    user.setFriends(friedns);
-                    inMemoryUserStorage.updateUser(user);
-                    friends2 = otherUser.getFriends();
-                    friends2.add(userID);
-                    otherUser.setFriends(friends2);
-                    inMemoryUserStorage.updateUser(otherUser);
-                }
-            }
+            inMemoryUserStorage.addFriend(userID, friendID);
         }
+    }
 
     public void deleteFriend(Long userID, Long friendID)throws ValidationException,NotFoundException{
 
@@ -78,45 +109,19 @@ public class UserService {
                 .containsKey(friendID)) {
             throw new NotFoundException("Нет такого пользователя");
         }else{
-            User user = inMemoryUserStorage.getUsers().get(userID);
-            User friend = inMemoryUserStorage.getUsers().get(friendID);
-            Set<Long> friends = user.getFriends();
-            Set<Long> friends2 = friend.getFriends();
-            friends.remove(friendID);
-            user.setFriends(friends);
-            friends2.remove(userID);
-            friend.setFriends(friends2);
-            inMemoryUserStorage.updateUser(user);
-            inMemoryUserStorage.updateUser(friend);
+           inMemoryUserStorage.deleteFriend(userID, friendID);
         }
     }
 
     public Collection<User> getCommonFriends(Long id, Long otherID) throws NotFoundException {
-        Collection<User> commondFriend = new ArrayList<>();
-        if (inMemoryUserStorage.getUsers().containsKey(id) || (inMemoryUserStorage.getUsers().containsKey(otherID))) {
-            User user = inMemoryUserStorage.getUsers().get(id);
-            User otherUser = inMemoryUserStorage.getUsers().get(otherID);
-            if(user.getFriends()== null || otherUser.getFriends()==null) {
-            return commondFriend;
-                //if (!user.getFriends().isEmpty() || !otherUser.getFriends().isEmpty())
-            } else  {
-                    for (Long friend : user.getFriends()) {
-                        if (otherUser.getFriends().contains(friend)) {
-                            commondFriend.add(inMemoryUserStorage.getUsers().get(friend));
-                        }
-                    }
-                    return commondFriend;
-            }
-        }
-        return commondFriend;
+        return inMemoryUserStorage.getCommonFriends(id,otherID);
     }
 
     public User getUserByID(long id) throws NotFoundException {
         if(!inMemoryUserStorage.getUsers().containsKey(id)){
             throw new NotFoundException("Данного пользователя нет");
         } else {
-           User user = inMemoryUserStorage.getUsers().get(id);
-            return user;
+            return inMemoryUserStorage.getUserByID(id);
         }
     }
 }

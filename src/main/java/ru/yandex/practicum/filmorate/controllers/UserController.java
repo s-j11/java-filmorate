@@ -24,19 +24,19 @@ public class UserController {
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<User> findAll() {
-        return userService.getInMemoryUserStorage().findAll();
+    public List<User> findAllUsers() {
+        return userService.findAllUsers();
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User addUser(@RequestBody @NotNull User user) throws ValidationException,NotFoundException {
-        return userService.getInMemoryUserStorage().addUser(user);
+        return userService.addUser(user);
     }
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public User updateUsers(@RequestBody @NotNull User user) throws ValidationException, NotFoundException {
         log.error("Ошибка при обновление пользователя");
-        return userService.getInMemoryUserStorage().updateUser(user);
+        return userService.updateUser(user);
     }
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)

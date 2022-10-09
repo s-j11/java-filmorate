@@ -6,12 +6,15 @@ import ru.yandex.practicum.filmorate.exseptions.NotFoundException;
 import ru.yandex.practicum.filmorate.exseptions.ValidationException;
 import ru.yandex.practicum.filmorate.models.Film;
 import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+
+import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
     private InMemoryFilmStorage inMemoryFilmStorage;
+    private Map<Long, Film> films = new HashMap<Long, Film>();
+   private LocalDate date = LocalDate.of(1895,12,28);
     @Autowired
     public FilmService(InMemoryFilmStorage inMemoryFilmStorage) {
         this.inMemoryFilmStorage = inMemoryFilmStorage;
@@ -20,65 +23,60 @@ public class FilmService {
         return inMemoryFilmStorage;
     }
 
-    public Collection<Film> getFavoriteFilms(long count) throws NotFoundException {
-        if (count > 0) {
-            Collection<Film> films = new ArrayList<>();
-            Collection<Film> films2 = new ArrayList<>();
-            if (count > 0) {
-                Map<Integer, Film> resultWithNull = new HashMap<>();
-                Map<Integer, Film> resultWithOutNull = new HashMap<>();
-                Map<Integer, Film> resultSumLikesIsEmpty = new HashMap<>();
-                Map<Integer, Film> resultSumLikes = new HashMap<>();
-                for (Film film : inMemoryFilmStorage.getFilms().values()) {
-                    if (film.getLikes() == null) {
-                        if (resultWithNull.put((int) film.getId(), film) != null) {
-                            throw new IllegalStateException("Duplicate key");
-                        }
-                    }
-                }
-                for (Film film : inMemoryFilmStorage.getFilms().values()) {
-                    if (film.getLikes() != null) {
-                        if (resultWithOutNull.put((int) film.getId(), film) != null) {
-                            throw new IllegalStateException("Duplicate key");
-                        }
-                    }
-                }
-
-                for (Film film : resultWithOutNull.values()) {
-                    if (film.getLikes().isEmpty()) {
-                        if (resultSumLikesIsEmpty.put((int) film.getId(), film) != null) {
-                            throw new IllegalStateException("Duplicate key");
-                        }
-                    }
-                }
-                for (Film film : resultWithOutNull.values()) {
-                    if (!film.getLikes().isEmpty()) {
-                        if (resultSumLikes.put((int) film.getId(), film) != null) {
-                            throw new IllegalStateException("Duplicate key");
-                        }
-                    }
-                }
-                if ((resultWithNull.size() + resultSumLikesIsEmpty.size()) == inMemoryFilmStorage.getFilms().size()) {
-                    films = resultWithNull.values().stream().collect(Collectors.toList());
-                    films2 = resultSumLikesIsEmpty.values().stream().collect(Collectors.toList());
-                    for (Film film : films) {
-                        films2.add(film);
-                    }
-                    return films2;
-                } else if (resultSumLikes.size() == 1) {
-                    return resultSumLikes.values().stream().collect(Collectors.toList());
-
-                } else if (resultSumLikes.size() > 1) {
-                    return inMemoryFilmStorage.getFilms().values().stream().sorted(new FilmComporator())
-                            .limit(count).collect(Collectors.toList());
-                }
-            } else {
-                throw new NotFoundException("Ошибка списка популярных фильмов");
-            }
-        }
-            return null;
+    public List<Film> findAllFilms(){
+    return inMemoryFilmStorage.findAll();
     }
 
+    public Film addFilm(Film film) throws ValidationException {
+        films = inMemoryFilmStorage.getFilms();
+        if (films.containsKey(film.getId())) {
+            throw new ValidationException("Tакого фильм уже существует");
+        } else {
+            if (film.getName().isEmpty()) {
+                throw new ValidationException("Название фильма не указано");
+            }
+            if (film.getDescription().length() > 200) {
+                throw new ValidationException("Опесание фильно вышло за границы 200 символов");
+            }
+            if (film.getReleaseDate().isBefore(date)) {
+                throw new ValidationException("Дата релиза не может быть ранее 28 декабря 1895 года");
+            }
+            if (film.getDuration() < 0) {
+                throw new ValidationException("Продолжительность фильма в минутах должна быль " +
+                        "неотрицательной и больше 0");
+            }
+            return inMemoryFilmStorage.addFilm(film);
+        }
+    }
+
+    public Film updateFilm(Film film)throws ValidationException{
+        films = inMemoryFilmStorage.getFilms();
+            if (!films.containsKey(film.getId())) {
+                throw new NotFoundException("Нет такого фильма");
+            }else {
+                if (film.getName().isEmpty()) {
+                    throw new ValidationException("Название фильма не указано");
+                }
+                if (film.getDescription().length() > 200) {
+                    throw new ValidationException("Опесание фильно вышло за границы 200 символов");
+                }
+                if (film.getReleaseDate().isBefore(date)) {
+                    throw new ValidationException("Дата релиза не может быть ранее 28 декабря 1895 года");
+                }
+                if (film.getDuration() < 0) {
+                    throw new ValidationException("Продолжительность фильма в минутах должна быль " +
+                            "неотрицательной и больше 0");
+                }
+        }
+        return inMemoryFilmStorage.updateFilm(film);
+    }
+    public void deleteFilm(long filmID){
+        inMemoryFilmStorage.deleteFilm(filmID);
+    }
+
+    public Collection<Film> getFavoriteFilms(long count) throws NotFoundException {
+       return inMemoryFilmStorage.getFavoritFilms(count);
+    }
         static class FilmComporator implements Comparator<Film>{
             @Override
             public int compare(Film o1, Film o2) {
