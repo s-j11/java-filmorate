@@ -2,8 +2,8 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exseptions.NotFoundException;
-import ru.yandex.practicum.filmorate.exseptions.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.models.User;
 import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
@@ -12,6 +12,7 @@ import java.util.*;
 @Service
 public class UserService {
     private InMemoryUserStorage inMemoryUserStorage;
+    private Map<Long, User> users = new HashMap<>();
     @Autowired
     public UserService(InMemoryUserStorage inMemoryUserStorage) {
         this.inMemoryUserStorage = inMemoryUserStorage;
@@ -20,7 +21,6 @@ public class UserService {
         return inMemoryUserStorage;
     }
 
-    private Map<Long, User> users = new HashMap<>();
     public List<User> findAllUsers(){
         return inMemoryUserStorage.findAllUsers();
     }
